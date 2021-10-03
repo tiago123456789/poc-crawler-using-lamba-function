@@ -1,0 +1,26 @@
+{
+  "name": "case-study-crawler-lambda",
+  "version": "1.0.0",
+  "description": "",
+  "main": "handler.js",
+  "dependencies": {
+    "aws-sdk": "^2.999.0",
+    "axios": "^0.22.0",
+    "cheerio": "^1.0.0-rc.10",
+    "dynamodb-data-types": "^3.0.1",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "serverless-dynamodb-local": "^0.2.40",
+    "serverless-offline": "^8.2.0",
+    "serverless-offline-dynamodb-streams": "^5.0.0",
+    "serverless-plugin-offline-dynamodb-stream": "^1.0.20"
+  },
+  "scripts": {
+    "start": "sls offline start",
+    "test": "mocha"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

@@ -1,0 +1,82 @@
+service: case-study-crawler-lambda
+
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  lambdaHashingVersion: 20201221
+
+plugins:
+  - serverless-offline
+  - serverless-dynamodb-local
+  - serverless-offline-dynamodb-streams
+
+custom:
+  dynamodb:
+    stages:
+      - dev
+    start:
+      migrate: true
+      port: 8000
+
+iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+        - dynamodb:BatchWriteItem
+      Resource: 
+        - arn:aws:dynamodb:us-east-1:507403822990:table/poc-webcrawler-scaled-links-products-staging/stream/2021-10-03T02:16:38.9534
+        - arn:aws:dynamodb:us-east-1:507403822990:table/poc-webcrawler-scaled-links-products-staging
+        - arn:aws:dynamodb:us-east-1:507403822990:table/poc-webcrawler-scaled-extracted-products-staging
+
+patterns:
+  - '!.env'
+  - '!.dynamodb'
+
+functions:
+  hello:
+    handler: handler.hello
+    timeout: 60
+    memorySize: 10240
+    events:
+      - httpApi:
+          path: /teste
+          method: get
+
+  processItem:
+    handler: handler.processItem
+    events:
+      - stream:
+          type: dynamodb
+          batchSize: 5
+          enabled: true
+          arn: arn:aws:dynamodb:us-east-1:507403822990:table/poc-webcrawler-scaled-links-products-staging/stream/2021-10-03T02:16:38.953
+
+# resources:
+#   Resources:
+#     usersTable:
+#       Type: AWS::DynamoDB::Table
+#       Properties:
+#         TableName: poc-webcrawler-scaled-links-products-staging
+#         AttributeDefinitions:
+#           - AttributeName: id
+#             AttributeType: S
+#         KeySchema:
+#           - AttributeName: id
+#             KeyType: HASH
+#         ProvisionedThroughput:
+#           ReadCapacityUnits: 1
+#           WriteCapacityUnits: 1
+
+# you can add CloudFormation resource templates here
+#resources:
+#  Resources:
+#    NewResource:
+#      Type: AWS::S3::Bucket
+#      Properties:
+#        BucketName: my-new-bucket
+#  Outputs:
+#     NewOutput:
+#       Description: "Description for the output"
+#       Value: "Some output value"
